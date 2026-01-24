@@ -1,0 +1,105 @@
+===========================================================================
+DECK CONSTRUCTION: CUT & LAYOUT REPORT
+===========================================================================
+Balance Score: 1.6369 | Total Infill Rows: 15
+---------------------------------------------------------------------------
+INDIVIDUAL PLANK UTILIZATION:
+Plank P01 (3000mm):
+  > Cut  2255.00mm for: FRAME Left (J1-J2, 1 spans)
+  > Cut   387.32mm for: Row 1 Left (J2-J3, 1 spans)
+  > Final Scrap:   357.68mm
+Plank P02 (3000mm):
+  > Cut  2255.00mm for: FRAME Right (J11-J12, 1 spans)
+  > Cut   387.32mm for: Row 2 Right (J10-J11, 1 spans)
+  > Final Scrap:   357.68mm
+Plank P03 (3000mm):
+  > Cut  1359.97mm for: FRAME Top-West (J1-J5, 4 spans)
+  > Cut   803.54mm for: Row 3 Left (J2-J4, 2 spans)
+  > Cut   803.54mm for: Row 4 Right (J9-J11, 2 spans)
+  > Final Scrap:    32.94mm
+Plank P04 (3000mm):
+  > Cut  2608.63mm for: FRAME Top-East (J5-J12, 7 spans)
+  > Final Scrap:   391.37mm
+Plank P05 (3600mm):
+  > Cut  3300.88mm for: Row 1 Right (J3-J11, 8 spans)
+  > Final Scrap:   299.12mm
+Plank P06 (3600mm):
+  > Cut  3300.88mm for: Row 2 Left (J2-J10, 8 spans)
+  > Final Scrap:   299.12mm
+Plank P07 (3000mm):
+  > Cut  2884.66mm for: Row 3 Right (J4-J11, 7 spans)
+  > Final Scrap:   115.34mm
+Plank P08 (3000mm):
+  > Cut  2884.66mm for: Row 4 Left (J2-J9, 7 spans)
+  > Final Scrap:   115.34mm
+Plank P09 (3000mm):
+  > Cut  1219.77mm for: Row 5 Left (J2-J5, 3 spans)
+  > Cut  1219.77mm for: Row 6 Right (J8-J11, 3 spans)
+  > Cut   387.32mm for: Row 12 Right (J10-J11, 1 spans)
+  > Final Scrap:   173.14mm
+Plank P10 (3000mm):
+  > Cut  2468.43mm for: Row 5 Right (J5-J11, 6 spans)
+  > Cut   387.32mm for: Row 7 Right (J10-J11, 1 spans)
+  > Final Scrap:   144.24mm
+Plank P11 (3000mm):
+  > Cut  2468.43mm for: Row 6 Left (J2-J8, 6 spans)
+  > Cut   387.32mm for: Row 10 Left (J2-J3, 1 spans)
+  > Final Scrap:   144.24mm
+Plank P12 (3600mm):
+  > Cut  3300.88mm for: Row 7 Left (J2-J10, 8 spans)
+  > Final Scrap:   299.12mm
+Plank P13 (3000mm):
+  > Cut   803.54mm for: Row 8 Left (J2-J4, 2 spans)
+  > Cut   803.54mm for: Row 9 Right (J9-J11, 2 spans)
+  > Cut  1219.77mm for: Row 11 Right (J8-J11, 3 spans)
+  > Final Scrap:   173.14mm
+Plank P14 (3300mm):
+  > Cut  2884.66mm for: Row 8 Right (J4-J11, 7 spans)
+  > Final Scrap:   415.34mm
+Plank P15 (3300mm):
+  > Cut  2884.66mm for: Row 9 Left (J2-J9, 7 spans)
+  > Final Scrap:   415.34mm
+Plank P16 (3600mm):
+  > Cut  3300.88mm for: Row 10 Right (J3-J11, 8 spans)
+  > Final Scrap:   299.12mm
+Plank P17 (3300mm):
+  > Cut  2468.43mm for: Row 11 Left (J2-J8, 6 spans)
+  > Cut   803.54mm for: Row 14 Right (J9-J11, 2 spans)
+  > Final Scrap:    28.02mm
+Plank P18 (3600mm):
+  > Cut  3300.88mm for: Row 12 Left (J2-J10, 8 spans)
+  > Final Scrap:   299.12mm
+Plank P19 (3300mm):
+  > Cut  1219.77mm for: Row 13 Left (J2-J5, 3 spans)
+  > Final Scrap:  2080.23mm
+Plank P20 (3300mm):
+  > Cut  2468.43mm for: Row 13 Right (J5-J11, 6 spans)
+  > Cut   387.32mm for: Row 15 Left (J2-J3, 1 spans)
+  > Final Scrap:   444.24mm
+Plank P21 (3300mm):
+  > Cut  2884.66mm for: Row 14 Left (J2-J9, 7 spans)
+  > Final Scrap:   415.34mm
+Plank P22 (3600mm):
+  > Cut  3300.88mm for: Row 15 Right (J3-J11, 8 spans)
+  > Final Scrap:   299.12mm
+---------------------------------------------------------------------------
+CONSTRUCTION SEQUENCE (PLACEMENT):
+FRAME: Left         |  2255.00mm | Plank P01
+FRAME: Right        |  2255.00mm | Plank P02
+FRAME: Top-West     |  1359.97mm | Plank P03
+FRAME: Top-East     |  2608.63mm | Plank P04
+ROW 01: Join @ J03 | Left:  387.32(P01) | Right: 3300.88(P05)
+ROW 02: Join @ J10 | Left: 3300.88(P06) | Right:  387.32(P02)
+ROW 03: Join @ J04 | Left:  803.54(P03) | Right: 2884.66(P07)
+ROW 04: Join @ J09 | Left: 2884.66(P08) | Right:  803.54(P03)
+ROW 05: Join @ J05 | Left: 1219.77(P09) | Right: 2468.43(P10)
+ROW 06: Join @ J08 | Left: 2468.43(P11) | Right: 1219.77(P09)
+ROW 07: Join @ J10 | Left: 3300.88(P12) | Right:  387.32(P10)
+ROW 08: Join @ J04 | Left:  803.54(P13) | Right: 2884.66(P14)
+ROW 09: Join @ J09 | Left: 2884.66(P15) | Right:  803.54(P13)
+ROW 10: Join @ J03 | Left:  387.32(P11) | Right: 3300.88(P16)
+ROW 11: Join @ J08 | Left: 2468.43(P17) | Right: 1219.77(P13)
+ROW 12: Join @ J10 | Left: 3300.88(P18) | Right:  387.32(P09)
+ROW 13: Join @ J05 | Left: 1219.77(P19) | Right: 2468.43(P20)
+ROW 14: Join @ J09 | Left: 2884.66(P21) | Right:  803.54(P17)
+ROW 15: Join @ J03 | Left:  387.32(P20) | Right: 3300.88(P22)
