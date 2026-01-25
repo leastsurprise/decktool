@@ -139,11 +139,12 @@ fascia_data.append({'pts': [(split_x, L + OH), (D + OH, L + OH), (D, L), (split_
 # --- C. INFILL & SCREWS ---
 infill_data = []
 screw_positions = []
-cy = pf_inner_north - gap_rows  # Corrected gap between PF and first row
-in_x_start = pf_inner_west + gap_boards  # Corrected gap from side PF
+cy = pf_inner_north - gap_rows
+in_x_start = pf_inner_west + gap_boards
 in_x_end = pf_inner_east - gap_boards
 
 for r in range(15):
+    # Random join joist for row variety
     j_idx = random.randint(2, 9)
     tx = joist_centers[j_idx]
     l_end = tx - (gap_boards / 2)
@@ -163,16 +164,22 @@ for r in range(15):
     y_offsets = [W / 2 - screw_edge_offset, -(W / 2 - screw_edge_offset)]
 
     for jc in joist_centers:
-        if in_x_start <= jc <= l_end:
-            # If crossing join, offset from butt end by 15mm
-            sx = l_end - screw_butt_offset if abs(jc - tx) < 1.0 else jc
-            for dy in y_offsets: screw_positions.append((sx, row_y_center + dy))
-        if r_start <= jc <= in_x_end:
-            # If crossing join, offset from butt end by 15mm
-            sx = r_start + screw_butt_offset if abs(jc - tx) < 1.0 else jc
-            for dy in y_offsets: screw_positions.append((sx, row_y_center + dy))
+        # Standard Joist Screws (Center of joist)
+        # Handle join joist specifically to ensure screws appear on the sister blocks
+        if abs(jc - tx) < 0.1:
+            # Join Joist: Screws go 15mm from board ends into the sister blocks
+            # Left board end
+            for dy in y_offsets: screw_positions.append((l_end - screw_butt_offset, row_y_center + dy))
+            # Right board start
+            for dy in y_offsets: screw_positions.append((r_start + screw_butt_offset, row_y_center + dy))
+        else:
+            # Standard Joist: Check if board exists over this joist
+            if in_x_start <= jc <= l_end:
+                for dy in y_offsets: screw_positions.append((jc, row_y_center + dy))
+            elif r_start <= jc <= in_x_end:
+                for dy in y_offsets: screw_positions.append((jc, row_y_center + dy))
 
-    sm.allocate_sister_block(j_idx + 1, cy - W / 2)  # Register sister block use
+    sm.allocate_sister_block(j_idx + 1, cy - W / 2)
     cy -= (W + gap_rows)
 
 # ==========================================
@@ -186,7 +193,7 @@ for cp in joist_centers:
                  color=cq.Color(0.2, 0.2, 0.2))
 
 for j_num, y in sm.sister_usage:
-    # 90mm wide sister blocks
+    # 90mm wide sister blocks (orange)
     assembly.add(cq.Workplane("XY").box(90, 140, 45).translate((joist_centers[j_num - 1], y, -22.5)),
                  color=cq.Color("orange"))
 
@@ -199,8 +206,8 @@ for p in infill_data:
         cq.Workplane("XY").box(p['len'], W, board_h).translate((p['x'] + p['len'] / 2, p['y'] - W / 2, board_h / 2)),
         color=get_garapa_color())
 
-# 3. Screws (Fixed Color & Shape)
-screw_color = cq.Color(0.75, 0.75, 0.75)  # RGB for silver/gray
+# 3. Screws (Countersunk Cylinder Representation)
+screw_color = cq.Color(0.75, 0.75, 0.75)  # RGB for silver
 for sx, sy in screw_positions:
     assembly.add(cq.Workplane("XY").cylinder(height=1.0, radius=screw_head_dia / 2).translate((sx, sy, board_h)),
                  color=screw_color)
@@ -222,3 +229,15 @@ for b in sm.garapa_registry:
     print(f"{b['id']:12} | {b['orig']:7.1f}mm | {b['cuts'][0]['usage']}")
     for c in b['cuts'][1:]:
         print(f"{'':15} | {'':10} | {c['usage']}")
+
+print("\n" + "-" * 80)
+print("SISTER JOIST INSERT STOCK (H3.2 JOIST OFFCUTS)")
+print("-" * 80)
+for s in sm.sister_stock:
+    print(f"{s['id']:15} | Remaining: {s['rem']:7.1f}mm | Blocks: {len(s['cuts'])}")
+
+print("\n" + "-" * 80)
+print("FASTENER TALLY")
+print("-" * 80)
+print(f"Total Deck Screws Used (Infill): {len(screw_positions)}")
+print("-" * 80)
