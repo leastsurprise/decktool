@@ -17,6 +17,7 @@ gap_boards = 3.0  # Swelling gap between board ends
 vent_gap = 12.0  # Airflow gap below decking for fascia
 fascia_h = 140.0  # Vertical fascia height
 min_board_len = 600.0
+report_filename = "deck_layout_report.txt"
 
 # Sister Block Specs
 sister_block_len = 140.0 # Length matches standard board width
@@ -214,19 +215,54 @@ show(assembly)
 # ==========================================
 # 8. REPORTING
 # ==========================================
-print("=" * 80)
-print(f"DECK CONSTRUCTION REPORT | Balance Score: {best_score:.4f}")
-print("=" * 80)
-for b in sm.garapa_registry:
-    print(f"{b['id']:12} | {b['orig']:7.1f}mm | {b['cuts'][0]['usage']}")
-    for c in b['cuts'][1:]: print(f"{'':15} | {'':10} | {c['usage']}")
+report_content = []
 
-print("\n" + "-" * 80 + "\nGARAPA STOCK TALLY (REMAINING)\n" + "-" * 80)
+# Header and Score
+report_content.append("=" * 80)
+report_content.append(f"DECK CONSTRUCTION REPORT | Optimized Layout Score: {best_score:.4f}")
+report_content.append("=" * 80)
+
+# Detailed Plank Registry (Cuts for Picture Frame, Fascia, and Infill)
+report_content.append(f"{'PLANK ID':<12} | {'STOCK':<10} | {'CUT USAGE DETAILS'}")
+report_content.append("-" * 80)
+for b in sm.garapa_registry:
+    # First cut line
+    line = f"{b['id']:12} | {b['orig']:7.1f}mm | {b['cuts'][0]['len']:7.1f}mm : {b['cuts'][0]['usage']}"
+    report_content.append(line)
+    # Subsequent cuts from the same plank
+    for c in b['cuts'][1:]:
+        report_content.append(f"{'':12} | {'':10} | {c['len']:7.1f}mm : {c['usage']}")
+
+# Sister Block Tally (H3.2 Joist Offcuts)
+report_content.append("\n" + "-" * 80)
+report_content.append("SISTER JOIST INSERT USAGE (OFFCUTS)")
+report_content.append("-" * 80)
+for s in sm.sister_stock:
+    report_content.append(f"{s['id']:15} | Remaining: {s['rem']:7.1f}mm | Blocks Cut: {len(s['cuts'])}")
+    for c in s['cuts']:
+        report_content.append(f"{'':18} | {c['len']:7.1f}mm : {c['usage']}")
+
+# Final Stock Tally
+report_content.append("\n" + "-" * 80)
+report_content.append("GARAPA STOCK TALLY (REMAINING)")
+report_content.append("-" * 80)
 total_lm = 0
+# Sort remaining planks by length greatest to smallest per request
 for length in sorted(sm.garapa_stock.keys(), reverse=True):
     count = sm.garapa_stock[length]
     if count > 0:
-        print(f"{count:2} x {length:4}mm planks")
+        report_content.append(f"{count:2} x {length:4}mm planks remaining")
         total_lm += (count * length) / 1000.0
-print(f"Total Lineage Meters Remaining: {total_lm:.2f}m")
-print(f"Total Fasteners Used: {len(screw_positions)}")
+
+report_content.append(f"\nTotal Lineage Meters Remaining: {total_lm:.2f}m")
+report_content.append(f"Total Fasteners (Screws) Used: {len(screw_positions)}")
+report_content.append("=" * 80)
+
+# Write to console and file
+final_report = "\n".join(report_content)
+print(final_report)
+
+with open(report_filename, "w") as f:
+    f.write(final_report)
+
+print(f"\nReport successfully saved to: {report_filename}")
