@@ -212,8 +212,7 @@ for f in fascia_data:
     assembly.add(cq.Workplane("XY").polyline(f['pts']).close().extrude(-fascia_h).translate((0, 0, -vent_gap)), color=get_garapa_color())
 show(assembly)
 
-# ==========================================
-# 8. REPORTING
+# ==========================================G
 # ==========================================
 report_content = []
 
@@ -266,3 +265,115 @@ with open(report_filename, "w") as f:
     f.write(final_report)
 
 print(f"\nReport successfully saved to: {report_filename}")
+
+# ==========================================
+# 8. REPORTING
+# ==========================================
+report_content = []
+
+# --- 8A. SUMMARY & GUIDE ---
+report_content.append("=" * 80)
+report_content.append(f"DECK CONSTRUCTION REPORT | Optimized Layout Score: {best_score:.4f}")
+report_content.append("=" * 80)
+report_content.append("CONSTRUCTION GUIDE:")
+report_content.append("- Orientation: North is the side away from the house (the 'front' of the deck).")
+report_content.append("- Joist Numbering: J1 (West/Left) to J12 (East/Right).")
+report_content.append("- Row Numbering: R1 is the row closest to the North Picture Frame.")
+report_content.append("- Layout: Infill boards are cut to meet at a specific joist center (the 'Join').")
+report_content.append("- Joist Spans: Joists are located at these X centers:")
+for i, cp in enumerate(joist_centers):
+    report_content.append(f"  J{i + 1}: {cp:7.1f}mm")
+
+# --- 8B. DETAILED PLANK REGISTRY ---
+report_content.append("\n" + "=" * 80)
+report_content.append(f"{'PLANK ID':<12} | {'STOCK':<10} | {'CUT USAGE DETAILS'}")
+report_content.append("-" * 80)
+
+for b in sm.garapa_registry:
+    # Calculate initial usage to find remaining offcut
+    used_on_plank = sum(c['len'] for c in b['cuts'])
+    rem_on_plank = b['orig'] - used_on_plank
+
+    # Process first cut usage text
+    first_usage = b['cuts'][0]['usage']
+    if "INFILL" in first_usage:
+        # Determine joists for infill
+        row_idx = int(first_usage.split("R")[1].split()[0]) - 1
+        side = first_usage.split()[-1]
+        join_j = row_joins[row_idx] + 1
+        j_ref = f"(J2 to J{join_j})" if side == "L" else f"(J{join_j} to J11)"
+        first_usage = f"{first_usage} {j_ref}"
+
+    # First line: ID | Stock | First Cut
+    report_content.append(f"{b['id']:12} | {b['orig']:7.1f}mm | {b['cuts'][0]['len']:7.1f}mm : {first_usage}")
+
+    # Subsequent cuts
+    for c in b['cuts'][1:]:
+        c_usage = c['usage']
+        if "INFILL" in c_usage:
+            row_idx = int(c_usage.split("R")[1].split()[0]) - 1
+            side = c_usage.split()[-1]
+            join_j = row_joins[row_idx] + 1
+            j_ref = f"(J2 to J{join_j})" if side == "L" else f"(J{join_j} to J11)"
+            c_usage = f"{c_usage} {j_ref}"
+        # Corrected alignment: ensure the second vertical bar aligns
+        report_content.append(f"{'':12} | {'':10} | {c['len']:7.1f}mm : {c_usage}")
+
+    # Show remaining length from this specific plank
+    if rem_on_plank >= 1.0:
+        report_content.append(f"{'':12} | {'':10} | {rem_on_plank:7.1f}mm : [REMAINING OFFCUT]")
+    report_content.append("-" * 40)
+
+# --- 8C. SISTER JOIST INSERTS ---
+report_content.append("\n" + "-" * 80)
+report_content.append("SISTER JOIST INSERT USAGE (OFFCUTS)")
+report_content.append("-" * 80)
+for s in sm.sister_stock:
+    report_content.append(f"{s['id']:15} | Remaining: {s['rem']:7.1f}mm | Blocks Cut: {len(s['cuts'])}")
+    for c in s['cuts']:
+        report_content.append(f"{'':18} | {c['len']:7.1f}mm : {c['usage']}")
+
+# --- 8D. STOCK TALLY & OFFCUTS ---
+report_content.append("\n" + "-" * 80)
+report_content.append("GARAPA STOCK TALLY (REMAINING)")
+report_content.append("-" * 80)
+
+# 1. Uncut Full Boards
+full_board_lm = 0
+report_content.append("UNCUT FULL BOARDS:")
+for length in sorted(sm.garapa_stock.keys(), reverse=True):
+    count = sm.garapa_stock[length]
+    if count > 0:
+        report_content.append(f"  {count:2} x {length:4.1f}mm planks")
+        full_board_lm += (count * length)
+full_board_lm /= 1000.0
+
+# 2. Individual Offcuts
+offcut_lm = 0
+report_content.append("\nINDIVIDUAL OFFCUTS (Longest to Shortest):")
+all_offcuts = []
+for b in sm.garapa_registry:
+    rem = b['orig'] - sum(c['len'] for c in b['cuts'])
+    if rem >= 1.0:
+        all_offcuts.append({'bid': b['id'], 'len': rem})
+all_offcuts.sort(key=lambda x: x['len'], reverse=True)
+
+for off in all_offcuts:
+    report_content.append(f"  {off['len']:7.1f}mm (from {off['bid']})")
+    offcut_lm += off['len']
+offcut_lm /= 1000.0
+
+# 3. Final Summary Figures
+total_lm = full_board_lm + offcut_lm
+report_content.append("\nTOTAL INVENTORY SUMMARY:")
+report_content.append(f"  Sum of Uncut Boards: {full_board_lm:7.2f}m")
+report_content.append(f"  Sum of Offcuts:      {offcut_lm:7.2f}m")
+report_content.append(f"  Grand Total:         {total_lm:7.2f}m")
+report_content.append(f"\nTotal Fasteners (Screws) Used: {len(screw_positions)}")
+report_content.append("=" * 80)
+
+# Output Execution
+final_report = "\n".join(report_content)
+print(final_report)
+with open(report_filename, "w") as f:
+    f.write(final_report)
